@@ -53,8 +53,13 @@ public class Main {
             {0, 0, 4, 5, 0, 0, 7, 0, 0}};
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         int[][] solvedGrid = solve(grid);
+        String title = "Solved Sudoku";
+
+        if (countEmptySpace(solvedGrid) != 0)   title = "Unsolvable Sudoku";
+
+        System.out.println(title);
         printGrid(solvedGrid);
     }
 
@@ -76,25 +81,21 @@ public class Main {
         return true;
     }
 
-    private static int[][] solve(int[][] grid) {
+    private static int[][] solve(int[][] grid) throws InterruptedException {
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
                 if (grid[row][col] == 0){
                     for(int number = 1; number < 10; number++){
                         if (possible(row, col, number)) {
                             grid[row][col] = number;
-                            if (isFull(grid)){
+                            if (isFull(solve(grid))){
                                 return grid;
+                            }else {
+                                grid[row][col] = 0;
                             }
-                            long currentCount = countEmptySpace(grid);
-                            if (currentCount < Main.count){
-                                Main.count = currentCount;
-                                printGrid(grid);
-                            }
-                            solve(grid);
-                            grid[row][col] = 0;
                         }
                     }
+                    return grid;
                 }
             }
         }
@@ -110,7 +111,6 @@ public class Main {
     }
 
     public static void printGrid(int [][] grid){
-        System.out.println("Grid Missing " + countEmptySpace(grid) + " to be completed!");
         for (int row = 0; row < 9; row++){
             for (int col = 0; col < 9; col++){
                 System.out.print(grid[row][col] + " ");
